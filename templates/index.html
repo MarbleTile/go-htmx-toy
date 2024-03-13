@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Website :)</title>
+        <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
+        <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-exp.min.css">
+        <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-icons.min.css">
+        <script src="https://unpkg.com/htmx.org@1.9.10"> </script>
+    </head>
+    <body>
+        <header>
+            <div class="hero bg-primary">
+                <div class="hero-body">
+                    <h1>Website :)</h1>
+                </div>
+            </div>
+        </header>
+        <div class="container m-1">
+            <div class="columns">
+                <div class="column col-1">
+                </div>
+                <div class="column col-7">
+                    <ul id="add-item">
+                    </ul>
+                    <div id="add-item-loading" class="loading htmx-indicator"></div>
+                </div>
+                <div class="column col-3">
+                    <form 
+                        hx-post="/add_item" 
+                        hx-target="#add-item" 
+                        hx-swap="beforeend" 
+                        hx-indicator="#add-item-loading" 
+                        class="form-group m-2"
+                    >
+                        <label for="add-item-name" class="form-label">Item</label>
+                        <input type="text" name="add-item-name" class="form-input"> 
+                        <input type="submit" class="btn my-2" value="Add Item">
+                    </form>
+               </div>
+               <div class="column col-1">
+               </div>
+            </div>
+        </div>
+    </body>
+</html>
