@@ -1,4 +1,4 @@
-```go run .```
+```go run server.go```
 
 runs on port 8080
 
