@@ -9,7 +9,7 @@ import (
 )
 
 func give_root(w http.ResponseWriter, req *http.Request) {
-    tmpl := template.Must(template.ParseFiles("templates/index.html"))
+    tmpl := template.Must(template.ParseFiles("tmpl/index.html"))
     tmpl.Execute(w, nil)
 }
 
@@ -18,7 +18,7 @@ func add_item(w http.ResponseWriter, req *http.Request) {
         return
     }
     data := req.PostFormValue("add-item-name")
-    tmpl := template.Must(template.ParseFiles("templates/item.html"))
+    tmpl := template.Must(template.ParseFiles("tmpl/item.html"))
     tmpl.Execute(w, data)
 }
 
