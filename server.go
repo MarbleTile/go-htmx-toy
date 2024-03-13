@@ -4,43 +4,45 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
-	"time"
-	// "database/sql"
-	// _ "github.com/go-sql-driver/mysql"
+	"database/sql"
+	_ "github.com/go-sql-driver/mysql"
 )
 
-func headers(w http.ResponseWriter, req *http.Request){
-    for name, headers := range req.Header {
-        for _, h := range headers {
-            fmt.Fprintf(w, "%v: %v\n", name, h)
-        }
-    }
-}
-
-func give_root(w http.ResponseWriter, req *http.Request){
+func give_root(w http.ResponseWriter, req *http.Request) {
     tmpl := template.Must(template.ParseFiles("templates/index.html"))
     tmpl.Execute(w, nil)
 }
 
-type item struct {
-    name string
-}
-func add_item(w http.ResponseWriter, req *http.Request){
+func add_item(w http.ResponseWriter, req *http.Request) {
     if req.Method != "POST" {
         return
     }
     data := req.PostFormValue("add-item-name")
-    fmt.Println(data)
     tmpl := template.Must(template.ParseFiles("templates/item.html"))
-    time.Sleep(1 * time.Second)
     tmpl.Execute(w, data)
 }
 
-func main() {
-    http.HandleFunc("/headers", headers)
+func setup_sql() *sql.DB {
+    db, err := sql.Open("mysql", "root:cumdump@(172.18.0.2:3306)/go_test?parseTime=true")
+    if err != nil {
+        fmt.Println("setup_sql:", err)
+    }
+    err = db.Ping()
+    if err != nil {
+        fmt.Println("db.Ping():", err)
+    }
+    return db
+}
 
+func main() {
     http.HandleFunc("/", give_root)
     http.HandleFunc("/add_item", add_item)
+
+    fs := http.FileServer(http.Dir("static/"))
+    http.Handle("/static", http.StripPrefix("/static/", fs))
+
+    db := setup_sql()
+    db.Ping()
 
     http.ListenAndServe(":8080", nil)
 }
