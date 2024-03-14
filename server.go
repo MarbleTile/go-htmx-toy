@@ -14,7 +14,7 @@ import (
 
 func logging(f http.HandlerFunc) http.HandlerFunc {
     return func(w http.ResponseWriter, req *http.Request) {
-        log.Println(req.URL.Path)
+        log.Println(req.Method, req.URL.Path)
         f(w, req)
     }
 }
@@ -78,6 +78,11 @@ func main() {
     http.HandleFunc("/",            logging(give_root))
     http.HandleFunc("/add_item",    logging(add_item))
     http.HandleFunc("/del_item",    logging(del_item))
+    http.HandleFunc("/headers", func(w http.ResponseWriter, r *http.Request) {
+        for k, v := range r.Header {
+            fmt.Fprintf(w, "%s: %s\n", k, v)
+        }
+    })
 
     fs := http.FileServer(http.Dir("static/"))
     http.Handle("/static", http.StripPrefix("/static/", fs))
