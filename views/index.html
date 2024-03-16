@@ -1,0 +1,68 @@
+{{ block "index" . }}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Website :)</title>
+        <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
+        <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-exp.min.css">
+        <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-icons.min.css">
+        <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+        <script src="https://unpkg.com/htmx.org@1.9.10"> </script>
+    </head>
+    <body>
+        <header>
+            <div class="hero bg-primary">
+                <div class="hero-body">
+                    <h1>Website :)</h1>
+                </div>
+            </div>
+        </header>
+        <div class="container m-1">
+            <div class="columns">
+                <div class="column col-1">
+                </div>
+                <div class="column col-7">
+                    <ul id="items">
+                    </ul>
+                    <div id="items-loading" class="loading htmx-indicator"></div>
+                </div>
+                <div class="column col-3">
+                    <form 
+                        hx-post="/items" 
+                        hx-target="#items" 
+                        hx-swap="beforeend" 
+                        hx-indicator="#items-loading" 
+                        autocomplete="off"
+                        class="form-group m-2"
+                    >
+                        <label for="add-item-name" class="form-label">Item</label>
+                        <input type="text" name="add-item-name" class="form-input"> 
+                        <input type="submit" class="btn my-2" value="Add Item">
+                    </form>
+               </div>
+               <div class="column col-1">
+               </div>
+            </div>
+        </div>
+    </body>
+</html>
+{{ end }}
+
+{{ block "item" . }}
+<div id="item-{{ .Id }}" class="input-group my-2">
+    <span class="input-group-addon" style="min-width: 50%">{{ .Name }}</span>
+    <button class="btn btn-primary btn-action btn-lg input-group-btn"
+        hx-delete="/items/{{ .Id }}"
+        hx-target="#item-{{ .Id }}"
+        hx-swap="delete"
+        hx-vals='{"item-name": "{{ .Name }}"}'
+    >
+        <i class="icon icon-cross">
+            ::before
+            ::after
+        </i>
+    </button>
+</div>
+{{ end }} 

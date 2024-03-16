@@ -1,93 +1,119 @@
 package main
 
 import (
-    "os"
 	"fmt"
-	"log"
+	"io"
+	"os"
 
+	"html/template"
 	"net/http"
-    "html/template"
 
-    "database/sql"
+	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
+
+	"database/sql"
+
 	_ "github.com/go-sql-driver/mysql"
 )
 
-func logging(f http.HandlerFunc) http.HandlerFunc {
-    return func(w http.ResponseWriter, req *http.Request) {
-        log.Println(req.Method, req.URL.Path)
-        f(w, req)
+type tmpls struct {
+    tmpl *template.Template
+}
+
+func (t *tmpls) Render(w io.Writer, name string, data interface{}, c echo.Context) error {
+    return t.tmpl.ExecuteTemplate(w, name, data)
+}
+
+func init_tmpls() *tmpls {
+    return &tmpls{
+        tmpl: template.Must(template.ParseGlob("views/*.html")),
     }
 }
 
-func give_root(w http.ResponseWriter, req *http.Request) {
-    switch req.Method {
-    case http.MethodGet:
-        tmpl := template.Must(template.ParseFiles("tmpl/index.html"))
-        tmpl.Execute(w, nil)
-        break
-    default:
-        return
+//func give_root(w http.ResponseWriter, req *http.Request) {
+//    tmpl := template.Must(template.ParseFiles("tmpl/index.html"))
+//    tmpl.Execute(w, nil)
+//}
+//
+//func add_item(w http.ResponseWriter, req *http.Request) {
+//    data := req.PostFormValue("add-item-name")
+//    tmpl := template.Must(template.ParseFiles("tmpl/item.html"))
+//    tmpl.Execute(w, data)
+////    sql_add_item(data)
+//}
+//
+//func del_item(w http.ResponseWriter, req *http.Request) {
+//    req.ParseForm()
+////    data := req.PostFormValue("item-name")
+//}
+//
+
+func root(c echo.Context) error {
+    return c.Render(http.StatusOK, "index", nil)
+}
+
+var item_id = 0
+type item struct {
+    Name string
+    Id int
+}
+
+func init_item(name string) item {
+    item_id++
+    return item {
+        Name: name,
+        Id: item_id,
     }
 }
 
-func add_item(w http.ResponseWriter, req *http.Request) {
-    switch req.Method {
-    case http.MethodPost:
-        data := req.PostFormValue("add-item-name")
-        tmpl := template.Must(template.ParseFiles("tmpl/item.html"))
-        tmpl.Execute(w, data)
-//        sql_add_item(data)
-        break
-    default:
-        return
-    }
+func add_item(c echo.Context) error {
+    item := init_item(c.FormValue("add-item-name"))
+    fmt.Printf("%+v\n", item)
+    err := c.Render(http.StatusOK, "item", item)
+    return err
 }
 
-func del_item(w http.ResponseWriter, req *http.Request) {
-    switch req.Method {
-    case http.MethodPost:
-        req.ParseForm()
-//        data := req.PostFormValue("item-name")
-        break
-    default:
-        return
-    }
+func del_item(c echo.Context) error {
+    return c.NoContent(http.StatusOK)
 }
 
 func sql_setup() {
     var err error
     db, err = sql.Open("mysql", "root:cumdump@(172.18.0.2:3306)/go_test?parseTime=true")
     if err != nil {
-        fmt.Fprintf(os.Stderr, "setup_sql: %s", err)
+        fmt.Fprintf(os.Stderr, "setup_sql: %s\n", err)
     }
     err = db.Ping()
     if err != nil {
-        fmt.Fprintf(os.Stderr, "setup_sql: Ping(): %s", err)
+        fmt.Fprintf(os.Stderr, "setup_sql: Ping(): %s\n", err)
     }
 }
-
-func sql_add_item(item string) {
-    _, err := db.Exec(`INSERT INTO items (name) VALUE (?)`, item)
-    if err != nil {
-        fmt.Fprintf(os.Stderr, "sql_add_item: %s", err)
-    }
-}
+//
+//func sql_add_item(item string) {
+//    _, err := db.Exec(`INSERT INTO items (name) VALUE (?)`, item)
+//    if err != nil {
+//        fmt.Fprintf(os.Stderr, "sql_add_item: %s\n", err)
+//    }
+//}
 
 var db *sql.DB
 func main() {
-    http.HandleFunc("/",            logging(give_root))
-    http.HandleFunc("/add_item",    logging(add_item))
-    http.HandleFunc("/del_item",    logging(del_item))
-    http.HandleFunc("/headers", func(w http.ResponseWriter, r *http.Request) {
-        for k, v := range r.Header {
-            fmt.Fprintf(w, "%s: %s\n", k, v)
-        }
-    })
+    e := echo.New()
+    e.Use(middleware.LoggerWithConfig(middleware.LoggerConfig{
+        Format: "method: ${method}, uri: ${uri}, status: ${status}\n",
+    }))
 
-    fs := http.FileServer(http.Dir("static/"))
-    http.Handle("/static", http.StripPrefix("/static/", fs))
+    e.Renderer = init_tmpls()
+
+    e.GET("/", root)
+    e.POST("/items", add_item)
+    e.DELETE("/items/:id", del_item)
+
+    e.Static("/static", "static")
+
+//    rt.PathPrefix("/static/").Handler(http.StripPrefix("/static/", fs))
 
     sql_setup()
 
-    http.ListenAndServe(":8080", nil)
+    e.Logger.Fatal(e.Start(":8080"))
 }

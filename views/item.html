@@ -1,0 +1,14 @@
+<div class="input-group my-2">
+    <span class="input-group-addon" style="min-width: 50%">{{ . }}</span>
+    <button class="btn btn-primary btn-action btn-lg input-group-btn"
+        hx-post="/del_item"
+        hx-target="closest div"
+        hx-swap="delete"
+        hx-vals='{"item-name": "{{ . }}"}'
+    >
+        <i class="icon icon-cross">
+            ::before
+            ::after
+        </i>
+    </button>
+</div>
