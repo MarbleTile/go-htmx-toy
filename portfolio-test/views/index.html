@@ -1,0 +1,57 @@
+{{ block "index" . }}
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Website :)</title>
+        <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
+        <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-exp.min.css">
+        <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-icons.min.css">
+        <link rel="stylesheet" href="/static/anim_model.css">
+        <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+        <script src="https://unpkg.com/htmx.org@1.9.10"> </script>
+        <script type="importmap">
+            {"imports": {
+                "three": "https://unpkg.com/three@v0.162.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@v0.162.0/examples/jsm/"
+            }}
+        </script>
+    </head>
+    <body>
+        <header class="hero bg-primary">
+            <div class="hero-body m-2">
+                <h1>Website :)</h1>
+                <button class="btn" hx-get="/about" hx-target="#arena" hx-swap="innerHTML"
+                    hx-on:click="const m=document.querySelector('#model');m.style.visibility='hidden';"
+                    >About</button>
+                <button class="btn" hx-get="/contact" hx-target="#arena" hx-swap="innerHTML"
+                    hx-on:click="const m=document.querySelector('#model');m.style.visibility='hidden';"
+                    >Contact</button>
+                <button class="btn" hx-get="/work" hx-target="#arena" hx-swap="innerHTML"
+                    hx-on:click="const m=document.querySelector('#model');m.style.visibility='visible';"
+                    >Work</button>
+            </div>
+        </header>
+        <div id="arena">
+        </div>
+        <div id="model" class="p-centered" style="width: 50vw; height: 50vh;">
+            <script type="module" src="/static/js/model_viewer.js"></script>
+        </div>
+    </body>
+</html>
+{{ end }}
+
+{{ block "about" . }}
+<div class="m-2">
+<p>
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis nec fermentum massa. Sed nibh risus, sollicitudin a orci non, ultrices tincidunt elit. Nunc non convallis mauris. Vestibulum aliquam finibus purus, nec euismod sapien vestibulum et. Cras finibus augue in felis porttitor, et dapibus arcu auctor. Aliquam eu nibh tempus, tempor risus sodales, vehicula ante. Mauris et pharetra purus. Duis commodo ultrices quam id ultricies. Nunc non lectus nec nisi imperdiet dapibus vitae nec enim. Cras faucibus magna sit amet augue fermentum luctus. Curabitur sed dolor eu enim volutpat fringilla.
+</p>
+<p>
+    Cras eu commodo ipsum. In ac ligula in purus egestas volutpat vel hendrerit lectus. Sed eros massa, finibus eget imperdiet finibus, interdum eu velit. Donec malesuada sem id elit sagittis, ac placerat tortor ultricies. Aenean vel elit posuere, tincidunt odio non, venenatis enim. Integer sodales congue metus eu vestibulum. Ut viverra viverra urna, a condimentum enim laoreet at. Vestibulum interdum fermentum lorem, ac dignissim ex faucibus non. Pellentesque porta et nisl eu finibus. Integer dolor nulla, suscipit id convallis eu, egestas ac ligula. Morbi dui ligula, volutpat in euismod eget, volutpat eget neque. Nunc venenatis elit id dui tristique varius. Suspendisse in luctus magna. Nulla sollicitudin lectus non orci consectetur placerat. 
+</p>
+</div>
+{{ end }}
+
+{{ block "contact" . }}
+{{ end }}

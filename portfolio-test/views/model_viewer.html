@@ -1,0 +1,49 @@
+{{ block "model_viewer" . }}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>3d</title>
+    <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-exp.min.css">
+    <link rel="stylesheet" href="https://unpkg.com/spectre.css/dist/spectre-icons.min.css">
+    <link rel="stylesheet" href="/static/multiple_models.css">
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <script src="https://unpkg.com/htmx.org@1.9.10"> </script>
+    <script type="importmap">
+        {
+            "imports": {
+                "three": "https://unpkg.com/three@v0.162.0/build/three.module.js",
+                "three/addons/": "https://unpkg.com/three@v0.162.0/examples/jsm/"
+            }
+        }
+    </script>
+</head>
+<body>
+    <script type="module" src="/static/js/multiple_models.js"></script>
+    <div class="container m-1">
+    <div class="columns">
+    <div class="column col-1">
+        <a href="/" class="btn btn-primary">
+            back
+        </a>
+    </div>
+    <div class="column col-3">
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title h5">{{ .Name }}</div>
+            </div>
+            <div class="card-image" data-model="{{ .Name }}">
+            </div>
+        </div>
+    </div>
+    <div class="column col-3">
+    </div>
+    <div class="column col-5">
+    </div>
+    </div>
+    </div>
+</body>
+</html>
+{{ end }}

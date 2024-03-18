@@ -1,0 +1,25 @@
+@keyframes cycle_model {
+    0% {
+        opacity: 1;
+        filter: blur(0);
+    }
+    30% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 0;
+        filter: blur(20px);
+    }
+    70% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+        filter: blur(0);
+    }
+}
+
+.cycle_model {
+    animation-name: cycle_model;
+    animation-duration: 2s;
+}
